@@ -1,0 +1,190 @@
+﻿@page "/baccarat"
+
+<PageTitle>Baccarat</PageTitle>
+
+<h1>Baccarat</h1>
+
+<div>
+    <p>Player Score: @playerScore</p>
+    <p>Banker Score: @bankerScore</p>
+    <button class="btn btn-primary" @onclick="Deal">Deal</button>
+</div>
+
+@code {
+    private int playerScore;
+    private int bankerScore;
+
+    private void Deal()
+    {
+        // Logic for dealing cards and calculating scores goes here
+        // ...
+
+        // Generate two random cards for the player and banker
+        string playerCard1 = DrawCard();
+        string playerCard2 = DrawCard();
+        string bankerCard1 = DrawCard();
+        string bankerCard2 = DrawCard();
+
+        // Calculate the scores for the player and banker
+        playerScore = CalculateScore(playerCard1, playerCard2);
+        bankerScore = CalculateScore(bankerCard1, bankerCard2);
+
+        // Determine the winner
+        string winner = DetermineWinner(playerScore, bankerScore);
+
+        // Display the results
+        Console.WriteLine("Player Score: " + playerScore);
+        Console.WriteLine("Banker Score: " + bankerScore);
+        Console.WriteLine("Winner: " + winner);
+    }
+
+   
+    private string DrawCard()
+    {
+        // Check if the shoe is empty
+        if (shoe.Count == 0)
+        {
+            // Generate a new shoe of cards
+            GenerateShoe();
+        }
+
+        // Draw a card from the shoe
+        string card = shoe[0];
+        shoe.RemoveAt(0);
+
+        return card;
+    }
+
+
+
+
+    //Creating the shoe of cards
+
+    private List<string> deck = new List<string>();
+    private List<string> shoe = new List<string>();
+
+    private List<string> GenerateDeck()
+    {
+        // Creating a 52 card deck
+        string[] suits = { "H", "D", "C", "S" };
+        string[] ranks = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
+
+        foreach (string suit in suits)
+        {
+            foreach (string rank in ranks)
+            {
+                string card = rank + suit;
+                deck.Add(card);
+            }
+        }
+        return deck;
+    }
+
+    private List<string> GenerateShoe()
+    {
+        // Add 8 decks of cards to the shoe
+        for (int i = 0; i < 8; i++)
+        {
+            shoe.AddRange(GenerateDeck());
+        }
+
+        // Shuffle the shoe
+        ShuffleShoe();
+        return shoe;
+    }
+
+    private void ShuffleShoe()
+    {
+        Random random = new Random();
+
+        // Fisher-Yates shuffle algorithm
+        for (int i = shoe.Count - 1; i > 0; i--)
+        {
+            int j = random.Next(i + 1);
+            string temp = shoe[i];
+            shoe[i] = shoe[j];
+            shoe[j] = temp;
+        }
+    }
+
+    
+
+    private int CalculateScore(string card1, string card2, string card3 = null)
+    {
+        // Calculate the score for two or three cards
+        int score = GetCardValue(card1) + GetCardValue(card2);
+
+        if (card3 != null)
+        {
+            score += GetCardValue(card3);
+        }
+
+        return score;
+    }
+
+    private int GetCardValue(string card)
+    {
+        // Get the value of a card
+        string rank = card.Substring(0, card.Length - 1);
+        switch (rank)
+        {
+            case "A":
+                return 1;
+            case "2":
+                return 2;
+            case "3":
+                return 3;
+            case "4":
+                return 4;
+            case "5":
+                return 5;
+            case "6":
+                return 6;
+            case "7":
+                return 7;
+            case "8":
+                return 8;
+            case "9":
+                return 9;
+            default:
+                return 0;
+        }
+    }
+
+    private string DetermineWinner(int playerScore, int bankerScore)
+    {
+        // Determine the winner based on the scores
+        if (playerScore > bankerScore)
+        {
+            return "Player";
+        }
+        else if (playerScore < bankerScore)
+        {
+            return "Banker";
+        }
+        else
+        {
+            return "Tie";
+        }
+    }
+}
+
+
+
+
+
+
+
+@* 
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+} *@
